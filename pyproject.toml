@@ -1,0 +1,59 @@
+# ─────────────────────────────────────────────────────
+# Module   : pyproject.toml
+# Layer    : Infrastructure / Bootstrap
+# Pillar   : P0 (Bootstrap), P8 (Code Quality)
+# Complexity: O(1) time, O(1) space
+# ─────────────────────────────────────────────────────
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "discord-document-extraction-bot"
+version = "1.0.0"
+description = "A Discord bot for extracting structured data from documents via LLMs."
+requires-python = ">=3.12"
+dependencies = [
+    # API & Web Server
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.0",
+    
+    # Discord Integration
+    "discord.py>=2.4.0",
+    
+    # Configuration & Validation
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.0",
+    
+    # LLM Providers (Google GenAI explicitly requested)
+    "google-genai>=0.1.2",
+    
+    # Google Sheets Integration
+    "google-api-python-client>=2.130.0",
+    "google-auth>=2.29.0",
+    
+    # Observability
+    "structlog>=24.2.0",
+
+    # Image Processing
+    "Pillow>=10.0.0",
+
+    # HTTP Client (Async)
+    "httpx>=0.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "black>=24.4.0",
+    "mypy>=1.10.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py312']
