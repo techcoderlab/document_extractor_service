@@ -1,4 +1,4 @@
-# Markdown# Discord Document Extraction System
+# Document Extraction System
 
 ![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-v0.111.0-green.svg)
@@ -74,6 +74,8 @@ Upload any document image to the configured channel.
 !extract bill_of_lading  ← Specialized logistics data extraction
 !extract legacy          ← High-power prompt for degraded/handwritten docs
 ```
+
+![Discord Bot Demo](assets/discord_in_action.png)
 
 ### Method 2: Batch API with Dynamic Schema (Automation)
 

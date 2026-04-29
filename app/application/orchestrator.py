@@ -109,6 +109,14 @@ async def process_discord_extraction(
             
     return job
 
+async def _persist_safely(job: ExtractionJob) -> None:
+    """Fire-and-forget wrapper to prevent persistence failures from crashing the bot response."""
+    try:
+        await ports.save_extraction_to_sheets(job)
+        logger.info("Successfully persisted extraction to Sheets")
+    except Exception as e:
+        logger.error("Failed to persist extraction to Sheets. Data returned to user but not logged.", error=str(e))
+
 # Independent semaphore for API batch processing to avoid colliding with Discord traffic
 batch_extraction_semaphore = asyncio.Semaphore(settings.MAX_CONCURRENT_EXTRACTIONS)
 
@@ -143,6 +151,7 @@ async def process_batch_documents(request: BatchExtractionRequest) -> Dict[str, 
 
                 # 2. Optimize Image
                 opt_bytes, opt_mime = optimize_image_for_llm(file_bytes)
+        
 
                 # 3. LLM Extraction
                 engine = LLMEngine(provider=request.provider, model=request.model)
@@ -198,16 +207,6 @@ def _build_dynamic_api_prompt(extract_type: str, custom_schema: Dict[str, Any]) 
         f"REQUESTED SCHEMA:\n"
         f"{json.dumps(custom_schema, indent=2)}"
     )
-
-
-
-async def _persist_safely(job: ExtractionJob) -> None:
-    """Fire-and-forget wrapper to prevent persistence failures from crashing the bot response."""
-    try:
-        await ports.save_extraction_to_sheets(job)
-        logger.info("Successfully persisted extraction to Sheets")
-    except Exception as e:
-        logger.error("Failed to persist extraction to Sheets. Data returned to user but not logged.", error=str(e))
 
 def _clean_llm_output(raw_data: dict) -> dict:
     """

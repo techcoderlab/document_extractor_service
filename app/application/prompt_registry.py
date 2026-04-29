@@ -78,10 +78,7 @@ Output ONLY valid JSON:
 {_SCHEMA_FRAGMENT}""",
 
     # ── Legacy / Degraded ────────────────────────────────────────
-    "legacy": f"""Extract ALL readable text and data from this OLD or DEGRADED document image.
-Group data into logical sections based on content. Flag any field where text is partially illegible.
-Output ONLY valid JSON:
-{_SCHEMA_FRAGMENT}""",
+    "legacy": f"""Extract ALL readable text and data from this OLD or DEGRADED document image. Group data into logical sections based on content. Flag any field where text is partially illegible. Output ONLY valid JSON: {_SCHEMA_FRAGMENT}""",
 }
 
 
