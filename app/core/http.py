@@ -77,6 +77,29 @@ class HttpClient:
     async def get(self, url: str, **kwargs) -> httpx.Response:
         return await self.request("GET", url, **kwargs)
 
+    async def get_bytes_limited(self, url: str, max_bytes: int) -> bytes:
+        """
+        P2 Security: downloads a file without following redirects and stops as soon as
+        it passes max_bytes, so a huge or redirected download can't exhaust memory or
+        bounce the request to an internal address.
+        """
+        async with self._client.stream("GET", url, timeout=self.timeout, follow_redirects=False) as resp:
+            if resp.is_redirect:
+                raise ValueError("Redirects are not followed for file downloads")
+            resp.raise_for_status()
+
+            declared = int(resp.headers.get("content-length") or 0)
+            if declared > max_bytes:
+                raise ValueError(f"File is larger than {max_bytes} bytes")
+
+            chunks, total = [], 0
+            async for chunk in resp.aiter_bytes():
+                total += len(chunk)
+                if total > max_bytes:
+                    raise ValueError(f"File is larger than {max_bytes} bytes")
+                chunks.append(chunk)
+            return b"".join(chunks)
+
     async def post(self, url: str, **kwargs) -> httpx.Response:
         return await self.request("POST", url, **kwargs)
 

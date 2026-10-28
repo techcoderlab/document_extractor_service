@@ -5,7 +5,6 @@
 # ─────────────────────────────────────────────────────
 
 import asyncio
-import sys
 import structlog
 from fastapi import FastAPI
 
@@ -38,10 +37,12 @@ async def startup_event() -> None:
     """
     Bootstraps the Discord bot alongside the FastAPI worker.
     """
+    # The batch API works on its own; the Discord bot is an optional second entry point
     if not settings.DISCORD_BOT_TOKEN:
-        logger.error("DISCORD_BOT_TOKEN is missing. Bot will not start.")
-        sys.exit(1)
-        
+        logger.warning("DISCORD_BOT_TOKEN is not set. Running in API-only mode.")
+        return
+
+
     logger.info("Starting Discord Bot task...")
     asyncio.create_task(bot.start(settings.DISCORD_BOT_TOKEN))
 

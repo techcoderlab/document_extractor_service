@@ -18,6 +18,7 @@ from app.core.exceptions import BaseAppException
 from app.core.config import settings
 from app.infrastructure.image_processor import optimize_image_for_llm
 from app.core.http import get_client
+from app.core.security import assert_public_url
 from app.domain.api_schemas import BatchExtractionRequest, DocumentItem
 from app.application.llm_engine import LLMEngine
 
@@ -140,14 +141,16 @@ async def process_batch_documents(request: BatchExtractionRequest) -> Dict[str, 
                 # 1. Fetch File Bytes safely
                 file_bytes = None
                 if doc.base64_content:
-                    file_bytes = base64.b64decode(doc.base64_content)
+                    file_bytes = base64.b64decode(doc.base64_content, validate=True)
                 elif doc.file_url:
-                    client = get_client()
-                    resp = await client.get(str(doc.file_url))
-                    resp.raise_for_status()
-                    file_bytes = resp.content
+                    # P2 Security: refuse internal addresses, cap the download size
+                    await assert_public_url(str(doc.file_url))
+                    file_bytes = await get_client().get_bytes_limited(str(doc.file_url), settings.MAX_IMAGE_SIZE_BYTES)
                 else:
                     raise ValueError("Must provide either file_url or base64_content")
+
+                if len(file_bytes) > settings.MAX_IMAGE_SIZE_BYTES:
+                    raise ValueError(f"File is larger than {settings.MAX_IMAGE_SIZE_BYTES} bytes")
 
                 # 2. Optimize Image
                 opt_bytes, opt_mime = optimize_image_for_llm(file_bytes)

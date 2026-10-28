@@ -45,6 +45,16 @@ The system follows **Hexagonal (Ports & Adapters) Architecture**. The core domai
 
 ---
 
+## 🧪 Demo run
+
+A fictional sample invoice ([image](assets/demo/sample-invoice.png)) sent to the batch API with a custom schema came back as structured JSON in **3.5 s** with **910 tokens** on `gemini-2.5-flash-lite`, every field correct, including line items, VAT and total. Full output: [`assets/demo/sample-invoice.result.json`](assets/demo/sample-invoice.result.json).
+
+## 🔐 API Security
+
+- Every batch call needs the `X-API-Key` header (`API_SECRET_KEY` in `.env`), compared in constant time. With no key configured the API answers `503` instead of running open.
+- `file_url` downloads only go to public addresses: loopback, private LAN, link-local (cloud metadata) and reserved ranges are refused, redirects are not followed, and a download stops once it passes `MAX_IMAGE_SIZE_BYTES`.
+- The Discord bot is optional: without `DISCORD_BOT_TOKEN` the service runs in API-only mode.
+
 ## 🛠 Tech Stack
 
 - **Frameworks**: FastAPI, Discord.py (>= 2.3)
@@ -91,6 +101,7 @@ POST /api/v1/extract/batch
 
 ```bash
 curl -X POST "http://localhost:8000/api/v1/extract/batch" \
+     -H "X-API-Key: $API_SECRET_KEY" \
      -H "Content-Type: application/json" \
      -d '{
     "extract": "Bill of Lading",

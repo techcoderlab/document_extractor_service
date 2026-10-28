@@ -1,0 +1,50 @@
+{
+  "note": "Fictional sample invoice (assets/demo/sample-invoice.png), one call to gemini-2.5-flash-lite through POST /api/v1/extract/batch with a custom schema, run 28 Oct 2026.",
+  "seconds": 3.47,
+  "result": {
+    "id": "sample-1",
+    "status": "success",
+    "data": {
+      "invoice_number": "NWP-2026-0417",
+      "invoice_date": "14 Oct 2026",
+      "due_date": "28 Oct 2026",
+      "supplier": {
+        "name": "Northwind Plumbing (Sample)",
+        "vat_number": "GB 000 0000 00"
+      },
+      "bill_to": {
+        "name": "Harbour Lettings Ltd",
+        "address": "5 Quay Road, Hull HU1 2AA"
+      },
+      "line_items": [
+        {
+          "description": "Emergency call-out (evening)",
+          "qty": 1,
+          "unit_price": 95.0,
+          "amount": 95.0
+        },
+        {
+          "description": "Replace kitchen mixer tap",
+          "qty": 1,
+          "unit_price": 68.5,
+          "amount": 68.5
+        },
+        {
+          "description": "Labour (hours)",
+          "qty": 2.5,
+          "unit_price": 48.0,
+          "amount": 120.0
+        }
+      ],
+      "subtotal": 283.5,
+      "vat": 56.7,
+      "total": 340.2,
+      "currency": "£"
+    },
+    "token_usage": {
+      "prompt_tokens": 557,
+      "completion_tokens": 353,
+      "total_tokens": 910
+    }
+  }
+}

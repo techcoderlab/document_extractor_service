@@ -2,3 +2,4 @@
 .env
 /documentation
 /assets/discord_doc_extraction_bot.mov
+__pycache__/
